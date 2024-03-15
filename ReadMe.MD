@@ -7,3 +7,13 @@ Checkout [demo here](https://mc-yfyyj2sjhsjhkwc1s8w4zrxx4.pub.sfmc-content.com/a
 3. Write code and debug!!
 
 Happy coding! 
+
+<script runtat="server">
+Platform.Load("core","1.1.5");
+try {
+    Write('Hello world');
+}
+catch(e) {
+    Write(Stringify(e));
+}
+</script>

@@ -1,141 +1,146 @@
 <!-- 
     Deploy this into a cloudpage and good to go!
  -->
-<script runat="server">
-  Platform.Load("core", "1.1.5");
-  try {
-</script>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ampscript Editor</title>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-  <style>
-    body {
-      font-family: Calibri, sans-serif;
-    }
-
-    .run-button {
-      background-color: #1589EE;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-family: 'Salesforce Sans', sans-serif;
-      transition: background-color 0.3s ease;
-    }
-
-    .tab {
-      background-color: #e5e5e5;
-      padding: 20px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
-
-    #editor {
-      height: 50vh;
-      width: 100%;
-    }
-
-    textarea {
-      height: 50vh;
-      width: 100%;
-    }
-
-    #renderedResult {
-      border: 1px solid #ccc;
-      background-color: #f9f9f9;
-      padding: 10px;
-      margin-top: 20px;
-      height: 50vh;
-      overflow: auto;
-    }
-
-    form {
-      height: 50vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    input[type="submit"] {
-      align-self: flex-start;
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Render script -->
-  <script runat="server">
+ <script runat="server">
     Platform.Load("core", "1.1.5");
     try {
-      var scriptText = Request.GetFormField("scriptText");
-      if (scriptText != null) {
-        var renderedResult = Platform.Function.TreatAsContent(Platform.Function.TreatAsContent(scriptText));
-        
-        Variable.SetValue('@scriptText', scriptText);
-        Variable.SetValue('@renderedResult', renderedResult);
+  </script>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampscript Editor</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+      body {
+        font-family: Calibri, sans-serif;
       }
-    } catch (e) {
-      // Write(Stringify(e));
-      Variable.SetValue('@scriptText', scriptText);
-     Variable.SetValue('@renderedResult', '<font color="red"><b>Error: </b></font>' + Stringify(e));
-    }
-  </script>
-  <form action="%%=RequestParameter('PAGEURL')=%%" method="post">
-    <div class="tab">Enter Ampscript here</div>
-    <div id="editor"></div>
-    <input type="hidden" id="scriptText" name="scriptText" />
-    <input type="submit" value="Run" class="run-button">
-  </form>
-  <div id="result">
-    <div class="tab">
-      Ampscript Result:
+  
+      .run-button {
+        background-color: #1589EE;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-family: 'Salesforce Sans', sans-serif;
+        transition: background-color 0.3s ease;
+      }
+  
+      .tab {
+        background-color: #e5e5e5;
+        padding: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+  
+      #editor {
+        height: 50vh;
+        width: 100%;
+      }
+  
+      textarea {
+        height: 50vh;
+        width: 100%;
+      }
+  
+      #renderedResult {
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-top: 20px;
+        height: 50vh;
+        overflow: auto;
+      }
+  
+      form {
+        height: 50vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+  
+      input[type="submit"] {
+        align-self: flex-start;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Render script -->
+    <script runat="server">
+      try {
+        var scriptText = Request.GetFormField("scriptText");
+        if (scriptText != null) {
+          // Write('<br> scriptText from request ' + scriptText);
+          scriptTextEscaped = scriptText.replace(/\n/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g,'>');
+          // Write('<br> scriptText after replace ' + scriptTextEscaped);
+          var renderedResult = Platform.Function.TreatAsContent(scriptTextEscaped);
+          // Write('<br> renderedResult: ' + renderedResult)
+          
+          Variable.SetValue('@scriptText', scriptText);
+          Variable.SetValue('@renderedResult', renderedResult);
+        }
+      } catch (e) {
+        // Write(Stringify(e));
+        Variable.SetValue('@scriptText', scriptText);
+        Variable.SetValue('@renderedResult', '<font color="red"><b>Error: </b></font>' + Stringify(e));
+        Write('<br> renderedResult: ' + '<font color="red"><b>Error: </b></font>' + Stringify(e))
+      }
+    </script>
+    <form action="%%=RequestParameter('PAGEURL')=%%" method="post">
+      <div class="tab">Enter Ampscript here</div>
+      <div id="editor"></div>
+      <input type="hidden" id="scriptText" name="scriptText" />
+      <input type="submit" value="Run" class="run-button">
+    </form>
+    <div id="result">
+      <div class="tab">
+        Ampscript Result:
+      </div>
+      <div id="renderedResult"></div>
     </div>
-    <div id="renderedResult"></div>
-  </div>
-  <!-- Ace Editor Script -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-  <script>
-    var renderedResult = `%%=v(@renderedResult)=%%`;
-    var existingScriptText = `%%=v(@scriptText)=%%`;
-
-    if (renderedResult.trim() == '') {
-      $('#result').hide();
-    } else {
-      renderedResult = renderedResult.replaceAll('&lt;', '<').replaceAll('&gt;','>')
-      $('#renderedResult').html(renderedResult);
-      $('#result').show();
-    }
-
+    <!-- Ace Editor Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script>
+      var renderedResult = `%%=v(@renderedResult)=%%`;
+      var existingScriptText = `%%=v(@scriptText)=%%`;
+  
+      if (renderedResult.trim() == '') {
+        $('#result').hide();
+      } else {
+        existingScriptText = existingScriptText.replaceAll('&lt;', '<').replaceAll('&gt;','>')
+        renderedResult = renderedResult.replaceAll('&lt;', '<').replaceAll('&gt;','>')
+        $('#renderedResult').html(renderedResult);
+        $('#result').show();
+      }
+  
+    </script>
+    <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/javascript");
+      editor.getSession().setValue(existingScriptText);
+  
+      var textarea = document.getElementById('scriptText');
+      editor.getSession().on('change', function () {
+        textarea.value = editor.getSession().getValue().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      });
+  
+      textarea.value = editor.getSession().getValue();
+    </script>
+  </body>
+  </html>
+  <script runat="server">
+    Platform.Load("core", "1.1.5");
+  } catch (e) {
+        Write(Stringify(e));
+  }
   </script>
-  <script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
-    editor.getSession().setValue(existingScriptText);
-
-    var textarea = document.getElementById('scriptText');
-    editor.getSession().on('change', function () {
-      textarea.value = editor.getSession().getValue().replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    });
-
-    textarea.value = editor.getSession().getValue();
-  </script>
-</body>
-</html>
-<script runat="server">
-  Platform.Load("core", "1.1.5");
-} catch (e) {
-      Write(Stringify(e));
-}
-</script>
