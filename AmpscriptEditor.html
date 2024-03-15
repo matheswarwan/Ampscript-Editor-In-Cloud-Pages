@@ -127,6 +127,7 @@
       var editor = ace.edit("editor");
       editor.setTheme("ace/theme/monokai");
       editor.session.setMode("ace/mode/javascript");
+      editor.session.setUseWorker(false); 
       editor.getSession().setValue(existingScriptText);
   
       var textarea = document.getElementById('scriptText');
